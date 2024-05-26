@@ -16,6 +16,12 @@ namespace Masterdata.Application.Features.V1.Commands.Question
         public Guid? TopicId { get; set; }
         public string QuestionName { get; set; }
         public int? QuestionTime { get; set; }
+        public List<CreateAnswerCommand> ListAnswers { get; set; } = new();
+    }
+    public class CreateAnswerCommand
+    {
+        public string AnswerName { get; set; }
+        public bool? IsCorrect { get; set; }
     }
     public class CreateQuestionCommandHandler : IRequestHandler<CreateQuestionCommand, bool>
     {
@@ -30,6 +36,7 @@ namespace Masterdata.Application.Features.V1.Commands.Question
 
         public async Task<bool> Handle(CreateQuestionCommand request, CancellationToken cancellationToken)
         {
+            // Add câu hỏi
             var questionEntity = new QuestionModel
             {
                 QuestionId = Guid.NewGuid(),
@@ -40,6 +47,23 @@ namespace Masterdata.Application.Features.V1.Commands.Question
             };
 
             _context.QuestionModels.Add(questionEntity);
+
+            // Add đáp án
+            if (request.ListAnswers.Any())
+            {
+                foreach (var item in request.ListAnswers)
+                {
+                    var answerEntity = new AnswerModel
+                    {
+                        AnswerId = Guid.NewGuid(),
+                        QuestionId = questionEntity.QuestionId,
+                        AnswerName = item.AnswerName,
+                        IsCorrect = item.IsCorrect,
+                        CreateTime = DateTime.Now,
+                    };
+                    _context.AnswerModels.Add(answerEntity);
+                }
+            }
 
             await _unitOfWork.SaveChangesAsync();   
 
