@@ -9,9 +9,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Masterdata.Application.Features.V1.Commands
+namespace Masterdata.Application.Features.V1.Commands.Topic
 {
-    public class CreateTopicCommand  : IRequest<bool>
+    public class CreateTopicCommand : IRequest<bool>
     {
         public string TopicName { get; set; }
     }

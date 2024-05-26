@@ -1,6 +1,6 @@
 using Core.Common;
 using Infrastructure.Data;
-using Masterdata.Application.Features.V1.Commands;
+using Masterdata.Application.Features.V1.Commands.Topic;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,7 +24,17 @@ namespace Masterdata.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            //Global filter
+            //services.AddMvc(options =>
+            //{
+            //    options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+            //}).AddFluentValidation(s =>
+            //{
+            //    s.RegisterValidatorsFromAssemblyContaining<Program>();
+            //}).ConfigureApiBehaviorOptions(options =>
+            //{
+            //    options.InvalidModelStateResponseFactory = CustomFluentResponse.FluentValidationResponse;
+            //});
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

@@ -1,35 +1,32 @@
-﻿using MediatR;
+﻿using Core.ApiResponse;
+using Masterdata.Application.Features.V1.Commands.Question;
+using Masterdata.Application.Features.V1.Commands.Topic;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Core.ApiResponse;
-using Masterdata.Application.Features.V1.Commands.Topic;
 
 namespace Masterdata.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TopicController : ControllerBase
+    public class QuestionController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public TopicController(IMediator mediator) {
+        public QuestionController(IMediator mediator)
+        {
             _mediator = mediator;
         }
         [HttpPost("create")]
-        public async Task<IActionResult> CreateTopic(CreateTopicCommand command)
+        public async Task<IActionResult> CreateTopic(CreateQuestionCommand command)
         {
             var result = await _mediator.Send(command);
             return Ok(new ApiSuccessResponse
             {
                 Data = result,
-                Message = "Tạo chủ đề thành công"
+                Message = "Tạo câu hỏi thành công"
             });
         }
-
-
-
     }
 }
