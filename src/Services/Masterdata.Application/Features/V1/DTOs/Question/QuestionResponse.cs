@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Masterdata.Application.Features.V1.DTOs.Question
+{
+    public class QuestionResponse
+    {
+        public Guid? TopicId { get; set; }
+        public string TopicName { get; set; }
+        public List<QuestionDataResponse> ListQuestionData { get; set; } = new();
+    }
+
+    public class QuestionDataResponse
+    {
+        public Guid? QuestionId { get; set; }
+        public int? QuestionTime { get; set; }
+        public string QuestionName { get; set; }
+    }
+}
