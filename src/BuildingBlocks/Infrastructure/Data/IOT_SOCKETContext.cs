@@ -109,17 +109,20 @@ namespace Infrastructure.Data
 
             modelBuilder.Entity<SaveAnswerModel>(entity =>
             {
-                entity.HasKey(e => e.UserAnswerId);
+                entity.HasKey(e => e.SaveAnswerId);
 
                 entity.ToTable("SaveAnswerModel");
 
-                entity.Property(e => e.UserAnswerId).ValueGeneratedNever();
+                entity.Property(e => e.SaveAnswerId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreateTime).HasColumnType("datetime");
 
                 entity.Property(e => e.LastEditTime).HasColumnType("datetime");
 
-                entity.Property(e => e.SelectedAnswer).HasMaxLength(50);
+                entity.HasOne(d => d.Answer)
+                    .WithMany(p => p.SaveAnswerModels)
+                    .HasForeignKey(d => d.AnswerId)
+                    .HasConstraintName("FK_SaveAnswerModel_AnswerModel");
 
                 entity.HasOne(d => d.Question)
                     .WithMany(p => p.SaveAnswerModels)

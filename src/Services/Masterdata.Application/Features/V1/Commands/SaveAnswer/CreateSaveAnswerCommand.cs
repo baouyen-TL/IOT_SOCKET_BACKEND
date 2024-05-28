@@ -16,6 +16,7 @@ namespace Masterdata.Application.Features.V1.Commands.SaveAnswer
         public Guid? AnswerId { get; set; }
         public Guid? QuestionId { get; set; }
         public Guid? RemoteId { get; set; }
+        public int? QuestionTime { get; set; }
         public int? CountTime { get; set; }
     }
 
@@ -33,11 +34,20 @@ namespace Masterdata.Application.Features.V1.Commands.SaveAnswer
         public async Task<bool> Handle(CreateSaveAnswerCommand request, CancellationToken cancellationToken)
         {
             // Add câu trả lời
-            //var saveAnswerEntity = new SaveAnswerModel
-            //{
-            //    SaveAnswerId = Guid.NewGuid(),
-                
-            //};
+            var saveAnswerEntity = new SaveAnswerModel
+            {
+                SaveAnswerId = Guid.NewGuid(),
+                QuestionId = request.QuestionId,
+                AnswerId = request.AnswerId,
+                RemoteId = request.RemoteId,
+                SelectedTime = request.QuestionTime - request.CountTime,
+                CreateTime = DateTime.Now
+            };
+
+            _context.SaveAnswerModels.Add(saveAnswerEntity);
+
+            await _unitOfWork.SaveChangesAsync();
+
             return true;
         }
     }

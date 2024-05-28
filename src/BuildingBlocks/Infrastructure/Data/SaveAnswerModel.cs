@@ -7,13 +7,15 @@ namespace Infrastructure.Data
 {
     public partial class SaveAnswerModel
     {
-        public Guid UserAnswerId { get; set; }
+        public Guid SaveAnswerId { get; set; }
         public Guid? QuestionId { get; set; }
-        public string SelectedAnswer { get; set; }
+        public Guid? AnswerId { get; set; }
+        public Guid? RemoteId { get; set; }
         public int? SelectedTime { get; set; }
         public DateTime? CreateTime { get; set; }
         public DateTime? LastEditTime { get; set; }
 
+        public virtual AnswerModel Answer { get; set; }
         public virtual QuestionModel Question { get; set; }
     }
 }
