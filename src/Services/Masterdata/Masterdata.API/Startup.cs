@@ -62,6 +62,7 @@ namespace Masterdata.API
 
             // SignalR
             services.AddSignalR();
+            services.AddHostedService<MQTTService>();
 
             // Inject UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
