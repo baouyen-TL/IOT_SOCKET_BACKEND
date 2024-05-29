@@ -10,7 +10,7 @@ namespace Masterdata.Application.Features.V1.DTOs.Question
     {
         public Guid? TopicId { get; set; }
         public string TopicName { get; set; }
-        public List<QuestionDataResponse> ListQuestionData { get; set; } = new();
+        public List<QuestionDataResponse> ListQuestionDatas { get; set; } = new();
     }
 
     public class QuestionDataResponse
@@ -18,5 +18,13 @@ namespace Masterdata.Application.Features.V1.DTOs.Question
         public Guid? QuestionId { get; set; }
         public int? QuestionTime { get; set; }
         public string QuestionName { get; set; }
+        public List<AnswerResponse> ListAnswerDatas { get; set; } = new();
+    }
+
+    public class AnswerResponse
+    {
+        public Guid? AnswerId { get; set; }
+        public string AnswerName { get; set; }
+        public bool? IsCorrect { get; set; }
     }
 }

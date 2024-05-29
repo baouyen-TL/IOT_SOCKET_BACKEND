@@ -1,11 +1,8 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Core.ApiResponse;
+﻿using Core.Responses;
 using Masterdata.Application.Features.V1.Commands.Topic;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Masterdata.API.Controllers
 {

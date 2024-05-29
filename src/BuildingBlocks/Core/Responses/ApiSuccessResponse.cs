@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.ApiResponse
+namespace Core.Responses
 {
     public class ApiSuccessResponse
     {
-        public int Code { get; set; } = 200;
+        public int StatusCode { get; set; } = 200;
         public bool IsSuccess { get; set; } = true;
         public string Message { get; set; }
         public object Data { get; set; }

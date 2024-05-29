@@ -1,6 +1,10 @@
+using Core.Attributes;
 using Core.Common;
+using Core.Responses;
+using FluentValidation.AspNetCore;
 using Infrastructure.Data;
 using Masterdata.Application.Features.V1.Commands.Topic;
+using Masterdata.Application.Features.V1.Queries.Question;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,16 +29,10 @@ namespace Masterdata.API
         public void ConfigureServices(IServiceCollection services)
         {
             //Global filter
-            //services.AddMvc(options =>
-            //{
-            //    options.Filters.Add(typeof(HttpGlobalExceptionFilter));
-            //}).AddFluentValidation(s =>
-            //{
-            //    s.RegisterValidatorsFromAssemblyContaining<Program>();
-            //}).ConfigureApiBehaviorOptions(options =>
-            //{
-            //    options.InvalidModelStateResponseFactory = CustomFluentResponse.FluentValidationResponse;
-            //});
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+            });
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -45,6 +43,7 @@ namespace Masterdata.API
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             // Inject UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IQuestionQuery, QuestionQuery>();
             services.AddMediatR(typeof(CreateTopicCommandHandler).Assembly);
 
         }
