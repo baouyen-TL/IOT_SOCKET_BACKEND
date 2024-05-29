@@ -1,5 +1,9 @@
-﻿using Masterdata.Application.Features.V1.DTOs.MQTT;
+﻿using Core.Constant;
+using Core.Extensions;
+using Masterdata.Application.Features.V1.DTOs.MQTT;
+using Masterdata.Application.Features.V1.Queries.Remote;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
@@ -21,14 +25,21 @@ namespace Masterdata.Application.Features.V1.Services
         private readonly string username = "vinhvq";
         private readonly string password = "Voquangvinh2552001";
         private readonly IHubContext<ChathubService> _hubContext;
+        private readonly IRemoteQuery _remoteQuery;
 
-        public MQTTService(IHubContext<ChathubService> hubContext)
+        public MQTTService(IHubContext<ChathubService> hubContext, IRemoteQuery remoteQuery)
         {
             _hubContext = hubContext;
+            _remoteQuery = remoteQuery;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            var _configManager = new ConfigManager();
+            var brokerAddress = _configManager.BrokerAddress;
+            var port = _configManager.Port;
+            var username = _configManager.UserName;
+            var password = _configManager.Password;
             try
             {
                 _mqttClient = new MqttClient(brokerAddress, port, true, MqttSslProtocols.TLSv1_2, null, null);
@@ -51,14 +62,22 @@ namespace Masterdata.Application.Features.V1.Services
 
         private async void MqttClient_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
-            string message = Encoding.UTF8.GetString(e.Message);
-            var Mqqt = JsonConvert.DeserializeObject<MQTTResponse>(message);
+            // Kết nối thiết bị
+            if(e.Topic == ConstTopicConnect.ConnectWifi)
+            {
+                var response = Encoding.UTF8.GetString(e.Message);
+                var MQTT = JsonConvert.DeserializeObject<MQTTResponse>(response);
+                await _remoteQuery.GetStatusRemoteByRemoteName(MQTT.ClientId);
+            }
 
-            Console.WriteLine($"Received message: {message}");
+            // Nhận đáp án từ thiết bị
+            if(e.Topic == ConstTopicConnect.ChooseAnswer)
+            {
+                string response = Encoding.UTF8.GetString(e.Message);
+                var MQTT = JsonConvert.DeserializeObject<MQTTResponse>(response);
 
-            _hubContext.Clients.All.SendAsync("ReceiveMessage", "User", Mqqt.Msg);
-
-
+                _hubContext.Clients.All.SendAsync("ReceiveMessage", MQTT.ClientId ?? "", MQTT.Msg);
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

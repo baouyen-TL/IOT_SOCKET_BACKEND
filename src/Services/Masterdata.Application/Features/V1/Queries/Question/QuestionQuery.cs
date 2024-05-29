@@ -34,6 +34,7 @@ namespace Masterdata.Application.Features.V1.Queries.Question
 
             var listQuestions = await _context.QuestionModels.Where(x => x.TopicId == TopicId)
                 .Include(x => x.AnswerModels)
+                .OrderBy(x => x.CreateTime)
                 .ToListAsync();
 
             // Response ListQuestion
