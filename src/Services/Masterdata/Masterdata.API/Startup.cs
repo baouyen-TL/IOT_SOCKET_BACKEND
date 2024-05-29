@@ -1,10 +1,11 @@
-using Core.Attributes;
+﻿using Core.Attributes;
 using Core.Common;
 using Core.Responses;
 using FluentValidation.AspNetCore;
 using Infrastructure.Data;
 using Masterdata.Application.Features.V1.Commands.Topic;
 using Masterdata.Application.Features.V1.Queries.Question;
+using Masterdata.Application.Features.V1.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,13 +39,34 @@ namespace Masterdata.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Masterdata.API", Version = "v1" });
             });
-            services.AddMediatR(typeof(Startup).Assembly);
+
             services.AddDbContext<IOT_SOCKETContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+
+            var origins = Configuration.GetValue<string>("AllowedOrigins").Split(";");
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder.WithOrigins(origins)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials() // Cho phép sử dụng các credentials từ origin cụ thể
+                        .WithExposedHeaders("Access-Control-Allow-Origin"); // Chỉ định header được tiết lộ
+                });
+            });
+
+            services.AddMediatR(typeof(Startup).Assembly);
+            services.AddMediatR(typeof(CreateTopicCommandHandler).Assembly);
+
+            // SignalR
+            services.AddSignalR();
+
             // Inject UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IQuestionQuery, QuestionQuery>();
-            services.AddMediatR(typeof(CreateTopicCommandHandler).Assembly);
+
 
         }
 
@@ -64,9 +86,14 @@ namespace Masterdata.API
 
             app.UseAuthorization();
 
+            app.UseCors("CorsPolicy");
+
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChathubService>("/chathub");
+
             });
         }
     }

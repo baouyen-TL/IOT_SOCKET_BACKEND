@@ -21,6 +21,7 @@ namespace Masterdata.API.Controllers
             _mediator = mediator;
             _query = query;
         }
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateBeginGame(CreateBeginGameCommand command)
         {
