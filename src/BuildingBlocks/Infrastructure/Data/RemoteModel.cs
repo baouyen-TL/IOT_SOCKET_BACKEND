@@ -14,6 +14,7 @@ namespace Infrastructure.Data
 
         public Guid RemoteId { get; set; }
         public string RemoteName { get; set; }
+        public bool? Status { get; set; }
 
         public virtual ICollection<UserGameModel> UserGameModels { get; set; }
     }

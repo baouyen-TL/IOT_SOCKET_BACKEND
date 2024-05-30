@@ -1,9 +1,11 @@
 ﻿using Core.Constant;
+using Core.Exceptions;
 using Core.Extensions;
 using Masterdata.Application.Features.V1.DTOs.MQTT;
 using Masterdata.Application.Features.V1.Queries.Remote;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
@@ -14,23 +16,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Masterdata.Application.Features.V1.Services
 {
     public class MQTTService : IHostedService
     {
         private MqttClient _mqttClient;
-        private readonly string brokerAddress = "c805b8e62c2044939cc9ebcada8a35ee.s1.eu.hivemq.cloud";
-        private readonly int port = 8883;
-        private readonly string username = "vinhvq";
-        private readonly string password = "Voquangvinh2552001";
         private readonly IHubContext<ChathubService> _hubContext;
-        private readonly IRemoteQuery _remoteQuery;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
-        public MQTTService(IHubContext<ChathubService> hubContext, IRemoteQuery remoteQuery)
+        //private readonly IRemoteQuery _remoteQuery;
+
+        public MQTTService(IHubContext<ChathubService> hubContext, /*IRemoteQuery remoteQuery, */IServiceScopeFactory query)
         {
             _hubContext = hubContext;
-            _remoteQuery = remoteQuery;
+            //_remoteQuery = remoteQuery;
+            _serviceScopeFactory = query;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -48,7 +50,17 @@ namespace Masterdata.Application.Features.V1.Services
                 string clientId = Guid.NewGuid().ToString();
                 _mqttClient.Connect(clientId, username, password);
 
-                _mqttClient.Subscribe(new string[] { "socket/info" }, new byte[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
+                _mqttClient.Subscribe(new string[]
+                    { 
+                        ConstTopicConnect.ConnectWifi,
+                        ConstTopicConnect.ChooseAnswer,
+                        ConstTopicConnect.NextQuestion
+                    }, 
+                    new byte[] {
+                        MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE,
+                        MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE,
+                        MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE
+                    });
 
                 Console.WriteLine("Connected to MQTT broker and subscribed to topic 'socket/info'");
             }
@@ -62,22 +74,60 @@ namespace Masterdata.Application.Features.V1.Services
 
         private async void MqttClient_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
+            #region Cũ
             // Kết nối thiết bị
-            if(e.Topic == ConstTopicConnect.ConnectWifi)
-            {
-                var response = Encoding.UTF8.GetString(e.Message);
-                var MQTT = JsonConvert.DeserializeObject<MQTTResponse>(response);
-                await _remoteQuery.GetStatusRemoteByRemoteName(MQTT.ClientId);
-            }
+            //if (e.Topic == ConstTopicConnect.ConnectWifi)
+            //{
+            //    var response = Encoding.UTF8.GetString(e.Message);
+            //    var MQTT = JsonConvert.DeserializeObject<MQTTResponse>(response);
+            //    // ClientId là RemoteName
+            //    //await _remoteQuery.UpdateStatusRemoteByRemoteName(MQTT.ClientId);
+            //}
 
-            // Nhận đáp án từ thiết bị
-            if(e.Topic == ConstTopicConnect.ChooseAnswer)
-            {
-                string response = Encoding.UTF8.GetString(e.Message);
-                var MQTT = JsonConvert.DeserializeObject<MQTTResponse>(response);
+            //// Nhận đáp án từ thiết bị
+            //if(e.Topic == ConstTopicConnect.ChooseAnswer)
+            //{
+            //    string response = Encoding.UTF8.GetString(e.Message);
+            //    var MQTT = JsonConvert.DeserializeObject<MQTTResponse>(response);
 
-                _hubContext.Clients.All.SendAsync("ReceiveMessage", MQTT.ClientId ?? "", MQTT.Msg);
+            //    _hubContext.Clients.All.SendAsync("ReceiveMessage", MQTT.ClientId ?? "", MQTT.Msg);
+            //}
+            #endregion
+            #region Mới
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var remoteQuery = scope.ServiceProvider.GetRequiredService<IRemoteQuery>();
+
+                    var message = Encoding.UTF8.GetString(e.Message);
+                    var mqttResponse = JsonConvert.DeserializeObject<MQTTResponse>(message);
+
+                    switch (e.Topic)
+                    {
+                        case ConstTopicConnect.ConnectWifi:
+                            await remoteQuery.UpdateStatusRemoteByRemoteName(mqttResponse.ClientId);
+                            break;
+
+                        case ConstTopicConnect.ChooseAnswer:
+                            await _hubContext.Clients.All.SendAsync("ReceiveMessage", mqttResponse.ClientId ?? "", mqttResponse.Msg);
+                            break;
+
+                        case ConstTopicConnect.NextQuestion:
+                            Console.WriteLine("Received message on 'NextQuestion': " + message);
+                            break;
+
+                        default:
+                            Console.WriteLine($"Unknown topic: {e.Topic}, message: {message}");
+                            break;
+                    }
+                }
             }
+            catch(Exception ex)
+            {
+                throw new BadRequestException("Lỗi convert json to object!");
+            }
+            #endregion
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

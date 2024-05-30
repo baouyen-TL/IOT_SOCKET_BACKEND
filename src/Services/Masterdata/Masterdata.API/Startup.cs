@@ -5,6 +5,7 @@ using FluentValidation.AspNetCore;
 using Infrastructure.Data;
 using Masterdata.Application.Features.V1.Commands.Topic;
 using Masterdata.Application.Features.V1.Queries.Question;
+using Masterdata.Application.Features.V1.Queries.Remote;
 using Masterdata.Application.Features.V1.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -40,6 +41,7 @@ namespace Masterdata.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Masterdata.API", Version = "v1" });
             });
 
+
             services.AddDbContext<IOT_SOCKETContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -62,11 +64,14 @@ namespace Masterdata.API
 
             // SignalR
             services.AddSignalR();
+
             services.AddHostedService<MQTTService>();
+            //services.AddSingleton<IHostedService, MQTTService>();
 
             // Inject UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IQuestionQuery, QuestionQuery>();
+            services.AddScoped<IRemoteQuery, RemoteQuery>();
 
 
         }
