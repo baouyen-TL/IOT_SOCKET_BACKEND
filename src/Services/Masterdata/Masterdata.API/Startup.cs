@@ -6,6 +6,7 @@ using Infrastructure.Data;
 using Masterdata.Application.Features.V1.Commands.Topic;
 using Masterdata.Application.Features.V1.Queries.Question;
 using Masterdata.Application.Features.V1.Queries.Remote;
+using Masterdata.Application.Features.V1.Queries.Topic;
 using Masterdata.Application.Features.V1.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -72,6 +73,7 @@ namespace Masterdata.API
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IQuestionQuery, QuestionQuery>();
             services.AddScoped<IRemoteQuery, RemoteQuery>();
+            services.AddScoped<ITopicQuery, TopicQuery>();
 
 
         }
