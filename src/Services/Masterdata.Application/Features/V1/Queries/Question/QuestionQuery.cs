@@ -13,6 +13,7 @@ namespace Masterdata.Application.Features.V1.Queries.Question
     public interface IQuestionQuery
     {
         public Task<QuestionResponse> GetListQuestionByTopicId(Guid TopicId);
+        public Task<QuestionDataResponse> GetQuestionById(Guid QuestionId);
     }
     public class QuestionQuery : IQuestionQuery
     {
@@ -71,6 +72,33 @@ namespace Masterdata.Application.Features.V1.Queries.Question
             QuestionRes.ListQuestionDatas = ListQuestionDataRes;
 
             return QuestionRes;
+        }
+
+        public async Task<QuestionDataResponse> GetQuestionById(Guid QuestionId)
+        {
+            var question = await _context.QuestionModels.FirstOrDefaultAsync(x => x.QuestionId == QuestionId);
+            if (question == null) throw new BadRequestException("Id câu hỏi này không tồn tại");
+
+            var QuestionDataRes = new QuestionDataResponse
+            {
+                QuestionId = question.QuestionId,
+                QuestionName = question.QuestionName,
+                QuestionTime = question.QuestionTime,
+            };
+
+            var listAnswer = await _context.AnswerModels.Where(x => x.QuestionId == question.QuestionId)
+                .Select(x => new AnswerResponse
+                {
+                    AnswerId = x.AnswerId,
+                    AnswerName = x.AnswerName,
+                    IsCorrect = x.IsCorrect,
+                })
+                .ToListAsync();
+
+            QuestionDataRes.ListAnswerDatas = listAnswer;
+
+            return QuestionDataRes;
+
         }
     }
 }

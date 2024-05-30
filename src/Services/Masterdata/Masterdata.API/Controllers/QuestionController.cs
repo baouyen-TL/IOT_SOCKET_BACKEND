@@ -42,5 +42,16 @@ namespace Masterdata.API.Controllers
                 Message = "Get list câu hỏi thành công"
             });
         }
+
+        [HttpGet("get-by-id")]
+        public async Task<IActionResult> GetQuestionById([FromQuery] Guid QuestionId)
+        {
+            var result = await _query.GetQuestionById(QuestionId);
+            return Ok(new ApiSuccessResponse
+            {
+                Data = result,
+                Message = "Get câu hỏi thành công"
+            });
+        }
     }
 }
