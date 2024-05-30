@@ -29,7 +29,6 @@ namespace Infrastructure.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-
             }
         }
 
@@ -124,6 +123,11 @@ namespace Infrastructure.Data
                     .WithMany(p => p.SaveAnswerModels)
                     .HasForeignKey(d => d.AnswerId)
                     .HasConstraintName("FK_SaveAnswerModel_AnswerModel");
+
+                entity.HasOne(d => d.BeginGame)
+                    .WithMany(p => p.SaveAnswerModels)
+                    .HasForeignKey(d => d.BeginGameId)
+                    .HasConstraintName("FK_SaveAnswerModel_BeginGameModel");
 
                 entity.HasOne(d => d.Question)
                     .WithMany(p => p.SaveAnswerModels)

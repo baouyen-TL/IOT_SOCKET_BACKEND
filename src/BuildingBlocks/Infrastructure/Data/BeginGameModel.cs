@@ -9,6 +9,7 @@ namespace Infrastructure.Data
     {
         public BeginGameModel()
         {
+            SaveAnswerModels = new HashSet<SaveAnswerModel>();
             UserGameModels = new HashSet<UserGameModel>();
         }
 
@@ -19,6 +20,7 @@ namespace Infrastructure.Data
         public DateTime? LastEditTime { get; set; }
 
         public virtual TopicModel Topic { get; set; }
+        public virtual ICollection<SaveAnswerModel> SaveAnswerModels { get; set; }
         public virtual ICollection<UserGameModel> UserGameModels { get; set; }
     }
 }
