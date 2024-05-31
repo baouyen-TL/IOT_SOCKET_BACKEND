@@ -12,4 +12,12 @@ namespace Masterdata.Application.Features.V1.DTOs.Report
         public string AnswerName { get; set; }
         public int? TotalUserSelected { get; set; }
     }
+
+    public class ReportRankingRemoteResponse
+    {
+        public int? Position { get; set; }
+        public string RemoteName { get; set; }
+        public string UserName { get; set; }
+    }
+
 }
