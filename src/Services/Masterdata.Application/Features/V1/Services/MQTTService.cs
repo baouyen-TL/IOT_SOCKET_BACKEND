@@ -102,15 +102,18 @@ namespace Masterdata.Application.Features.V1.Services
 
                     var message = Encoding.UTF8.GetString(e.Message);
                     var mqttResponse = JsonConvert.DeserializeObject<MQTTResponse>(message);
+                    string ClientValue = mqttResponse.objReq.Values.ToString();
+
+                    string ClientKey = mqttResponse.objReq.Keys.ToString();
 
                     switch (e.Topic)
                     {
                         case ConstTopicConnect.ConnectWifi:
-                            await remoteQuery.UpdateStatusRemoteByRemoteName(mqttResponse.ClientId);
+                            await remoteQuery.UpdateStatusRemoteByRemoteName(ClientValue);
                             break;
 
                         case ConstTopicConnect.ChooseAnswer:
-                            await _hubContext.Clients.All.SendAsync("ReceiveMessage", mqttResponse.ClientId ?? "", mqttResponse.Msg);
+                            await _hubContext.Clients.All.SendAsync("ReceiveMessage", ClientKey ?? "", ClientValue);
                             break;
 
                         case ConstTopicConnect.NextQuestion:

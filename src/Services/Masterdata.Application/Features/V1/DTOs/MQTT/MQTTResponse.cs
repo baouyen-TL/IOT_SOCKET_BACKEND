@@ -8,8 +8,6 @@ namespace Masterdata.Application.Features.V1.DTOs.MQTT
 {
     public class MQTTResponse
     {
-        public string ClientId { get; set; }
-        public string Msg { get; set; }
-
+        public Dictionary<string, string> objReq;
     }
 }
