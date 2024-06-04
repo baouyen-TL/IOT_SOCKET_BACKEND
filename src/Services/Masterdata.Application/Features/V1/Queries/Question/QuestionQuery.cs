@@ -80,6 +80,8 @@ namespace Masterdata.Application.Features.V1.Queries.Question
 
         public async Task<QuestionDataResponse> GetQuestionById(Guid QuestionId)
         {
+            var config = new ConfigManager();
+
             var question = await _context.QuestionModels.FirstOrDefaultAsync(x => x.QuestionId == QuestionId);
             if (question == null) throw new BadRequestException("Id câu hỏi này không tồn tại");
 
