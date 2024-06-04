@@ -1,4 +1,5 @@
 ﻿using Core.Exceptions;
+using Core.Extensions;
 using Infrastructure.Data;
 using Masterdata.Application.Features.V1.DTOs.Question;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,8 @@ namespace Masterdata.Application.Features.V1.Queries.Question
         {
             var QuestionRes = new QuestionResponse();
 
+            var config = new ConfigManager();
+
             var topic = await _context.TopicModels.FirstOrDefaultAsync(x => x.TopicId == TopicId);
             if (topic == null) throw new BadRequestException("TopicId này không tồn tại!");
 
@@ -47,6 +50,7 @@ namespace Masterdata.Application.Features.V1.Queries.Question
                     QuestionId = question.QuestionId,
                     QuestionName = question.QuestionName,
                     QuestionTime = question.QuestionTime,
+                    
                 };
 
                 // Response List Answer

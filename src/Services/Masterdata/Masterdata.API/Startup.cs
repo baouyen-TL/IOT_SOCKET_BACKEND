@@ -76,6 +76,7 @@ namespace Masterdata.API
             services.AddScoped<IRemoteQuery, RemoteQuery>();
             services.AddScoped<ITopicQuery, TopicQuery>();
             services.AddScoped<IReportQuery, ReportQuery>();
+            services.AddScoped<ICommonService, CommonService>();
 
 
         }

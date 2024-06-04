@@ -16,6 +16,7 @@ namespace Infrastructure.Data
         public Guid QuestionId { get; set; }
         public Guid? TopicId { get; set; }
         public string QuestionName { get; set; }
+        public string ImageUrl { get; set; }
         public int? QuestionTime { get; set; }
         public DateTime? CreateTime { get; set; }
         public DateTime? LastEditTime { get; set; }

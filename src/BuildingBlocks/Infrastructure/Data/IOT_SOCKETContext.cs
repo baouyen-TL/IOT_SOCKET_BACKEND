@@ -86,6 +86,8 @@ namespace Infrastructure.Data
 
                 entity.Property(e => e.CreateTime).HasColumnType("datetime");
 
+                entity.Property(e => e.ImageUrl).HasMaxLength(500);
+
                 entity.Property(e => e.LastEditTime).HasColumnType("datetime");
 
                 entity.Property(e => e.QuestionName).HasMaxLength(2000);
