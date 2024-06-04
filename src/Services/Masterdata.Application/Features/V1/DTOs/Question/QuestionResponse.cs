@@ -18,6 +18,7 @@ namespace Masterdata.Application.Features.V1.DTOs.Question
         public Guid? QuestionId { get; set; }
         public int? QuestionTime { get; set; }
         public string QuestionName { get; set; }
+        public string ImageUrl { get; set; }
         public List<AnswerResponse> ListAnswerDatas { get; set; } = new();
     }
 
