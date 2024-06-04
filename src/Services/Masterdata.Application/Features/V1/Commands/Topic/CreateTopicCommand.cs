@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace Masterdata.Application.Features.V1.Commands.Topic
 {
-    public class CreateTopicCommand : IRequest<bool>
+    public class CreateTopicCommand : IRequest<Guid>
     {
         public string TopicName { get; set; }
     }
 
-    public class CreateTopicCommandHandler : IRequestHandler<CreateTopicCommand, bool>
+    public class CreateTopicCommandHandler : IRequestHandler<CreateTopicCommand, Guid>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IOT_SOCKETContext _context;
@@ -27,7 +27,7 @@ namespace Masterdata.Application.Features.V1.Commands.Topic
             _context = context;
         }
 
-        public async Task<bool> Handle(CreateTopicCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(CreateTopicCommand request, CancellationToken cancellationToken)
         {
             var topicEntity = new TopicModel
             {
@@ -40,7 +40,7 @@ namespace Masterdata.Application.Features.V1.Commands.Topic
 
             await _unitOfWork.SaveChangesAsync();
 
-            return true;
+            return topicEntity.TopicId;
         }
     }
 }
