@@ -14,6 +14,7 @@ namespace Infrastructure.Data
 
         public Guid AnswerId { get; set; }
         public Guid? QuestionId { get; set; }
+        public string AnswerKey { get; set; }
         public string AnswerName { get; set; }
         public bool? IsCorrect { get; set; }
         public DateTime? CreateTime { get; set; }

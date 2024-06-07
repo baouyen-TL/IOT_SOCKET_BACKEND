@@ -28,6 +28,7 @@ namespace Masterdata.Application.Features.V1.Commands.Question
     }
     public class CreateAnswerCommand
     {
+        public string AnswerKey { get; set; }
         public string AnswerName { get; set; }
         public bool? IsCorrect { get; set; }
     }
@@ -86,6 +87,7 @@ namespace Masterdata.Application.Features.V1.Commands.Question
                     {
                         AnswerId = Guid.NewGuid(),
                         QuestionId = questionEntity.QuestionId,
+                        AnswerKey = item.AnswerKey,
                         AnswerName = item.AnswerName,
                         IsCorrect = item.IsCorrect,
                         CreateTime = DateTime.Now,

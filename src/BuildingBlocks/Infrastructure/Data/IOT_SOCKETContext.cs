@@ -44,6 +44,8 @@ namespace Infrastructure.Data
 
                 entity.Property(e => e.AnswerId).ValueGeneratedNever();
 
+                entity.Property(e => e.AnswerKey).HasMaxLength(50);
+
                 entity.Property(e => e.AnswerName).HasMaxLength(2000);
 
                 entity.Property(e => e.CreateTime).HasColumnType("datetime");
