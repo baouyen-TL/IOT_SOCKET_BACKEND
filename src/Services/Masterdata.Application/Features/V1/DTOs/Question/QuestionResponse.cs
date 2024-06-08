@@ -25,6 +25,7 @@ namespace Masterdata.Application.Features.V1.DTOs.Question
     public class AnswerResponse
     {
         public Guid? AnswerId { get; set; }
+        public string AnswerKey { get; set; }
         public string AnswerName { get; set; }
         public bool? IsCorrect { get; set; }
     }
