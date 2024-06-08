@@ -55,24 +55,22 @@ namespace Masterdata.Application.Features.V1.Queries.Question
 
                 // Response List Answer
                 var ListAnswerRes = new List<AnswerResponse>();
-                foreach (var answer in ListQuestionDataRes)
-                {
-                    var answerInfo = question.AnswerModels.Where(x => x.QuestionId == question.QuestionId).ToList();
-                    foreach(var item in answerInfo)
-                    {
-                        var answerRes = new AnswerResponse
-                        {
-                            AnswerKey = item.AnswerKey,
-                            AnswerId = item.AnswerId,
-                            AnswerName = item.AnswerName,
-                            IsCorrect = item.IsCorrect,
-                        };
 
-                        ListAnswerRes.Add(answerRes);
-                    }    
+                var answerInfo = question.AnswerModels.Where(x => x.QuestionId == question.QuestionId).ToList();
+                foreach (var item in answerInfo)
+                {
+                    var answerRes = new AnswerResponse
+                    {
+                        AnswerKey = item.AnswerKey,
+                        AnswerId = item.AnswerId,
+                        AnswerName = item.AnswerName,
+                        IsCorrect = item.IsCorrect,
+                    };
+
+                    ListAnswerRes.Add(answerRes);
                 }
                 // Response List Answer in Question
-                QuestionDataRes.ListAnswerDatas = ListAnswerRes;
+                QuestionDataRes.ListAnswerDatas = ListAnswerRes.OrderBy(x=>x.AnswerKey).ToList();
                 // Response List Question in Topic
                 ListQuestionDataRes.Add(QuestionDataRes);
             };
