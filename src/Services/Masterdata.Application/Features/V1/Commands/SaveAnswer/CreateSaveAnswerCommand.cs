@@ -13,6 +13,8 @@ namespace Masterdata.Application.Features.V1.Commands.SaveAnswer
 {
     public class CreateSaveAnswerCommand : IRequest<bool>
     {
+
+        public Guid? BeginGameId { get; set; }
         public Guid? AnswerId { get; set; }
         public Guid? QuestionId { get; set; }
         public Guid? RemoteId { get; set; }
@@ -37,6 +39,7 @@ namespace Masterdata.Application.Features.V1.Commands.SaveAnswer
             var saveAnswerEntity = new SaveAnswerModel
             {
                 SaveAnswerId = Guid.NewGuid(),
+                BeginGameId = request.BeginGameId,
                 QuestionId = request.QuestionId,
                 AnswerId = request.AnswerId,
                 RemoteId = request.RemoteId,

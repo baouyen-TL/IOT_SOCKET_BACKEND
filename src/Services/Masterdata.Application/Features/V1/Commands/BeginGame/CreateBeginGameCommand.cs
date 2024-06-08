@@ -1,4 +1,5 @@
 ﻿using Core.Common;
+using Core.Responses;
 using Infrastructure.Data;
 using Masterdata.Application.Features.V1.Commands.Question;
 using MediatR;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Masterdata.Application.Features.V1.Commands.BeginGame
 {
-    public class CreateBeginGameCommand : IRequest<bool>
+    public class CreateBeginGameCommand : IRequest<ApiSuccessResponse>
     {
         public Guid? TopicId { get; set; }
         public string ClassName { get; set; }
@@ -24,7 +25,7 @@ namespace Masterdata.Application.Features.V1.Commands.BeginGame
         public string UserName { get; set; }
     }
 
-    public class CreateBeginGameCommandHandler : IRequestHandler<CreateBeginGameCommand, bool>
+    public class CreateBeginGameCommandHandler : IRequestHandler<CreateBeginGameCommand, ApiSuccessResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IOT_SOCKETContext _context;
@@ -35,40 +36,50 @@ namespace Masterdata.Application.Features.V1.Commands.BeginGame
             _context = context;
         }
 
-        public async Task<bool> Handle(CreateBeginGameCommand request, CancellationToken cancellationToken)
+        public async Task<ApiSuccessResponse> Handle(CreateBeginGameCommand request, CancellationToken cancellationToken)
         {
-            // Add BeginGame
-            var beginGameEntity = new BeginGameModel
+            ApiSuccessResponse apiSuccess = new ApiSuccessResponse();
+            try
             {
-                BeginGameId = Guid.NewGuid(),
-                TopicId = request.TopicId,
-                ClassName = request.ClassName,
-                CreateTime = DateTime.Now,
-            };
-
-            _context.BeginGameModels.Add(beginGameEntity);
-
-            // Add UserName
-            if (request.ListUserNames.Any())
-            {
-                foreach (var item in request.ListUserNames)
+                // Add BeginGame
+                var beginGameEntity = new BeginGameModel
                 {
-                    var userNameEntity = new UserGameModel
+                    BeginGameId = Guid.NewGuid(),
+                    TopicId = request.TopicId,
+                    ClassName = request.ClassName,
+                    CreateTime = DateTime.Now,
+                };
+
+                _context.BeginGameModels.Add(beginGameEntity);
+
+                // Add UserName
+                if (request.ListUserNames.Any())
+                {
+                    foreach (var item in request.ListUserNames)
                     {
-                        UserGameId = Guid.NewGuid(),
-                        BeginGameId = beginGameEntity.BeginGameId,
-                        RemoteId = item.RemoteId,
-                        UserName = item.UserName,
-                        CreateTime = DateTime.Now
-                    };
+                        var userNameEntity = new UserGameModel
+                        {
+                            UserGameId = Guid.NewGuid(),
+                            BeginGameId = beginGameEntity.BeginGameId,
+                            RemoteId = item.RemoteId,
+                            UserName = item.UserName,
+                            CreateTime = DateTime.Now
+                        };
 
-                    _context.UserGameModels.Add(userNameEntity);
+                        _context.UserGameModels.Add(userNameEntity);
+                    }
                 }
+                await _unitOfWork.SaveChangesAsync();
+                apiSuccess.Data = beginGameEntity.BeginGameId;
+                apiSuccess.Message = "Tạo thông tin thành công, bắt đầu trò chơi!!";
+                return apiSuccess;
             }
-
-            await _unitOfWork.SaveChangesAsync();
-
-            return true;
+            catch (Exception ex)
+            {
+                apiSuccess.IsSuccess = false;
+                apiSuccess.Message = ex.Message;
+                return apiSuccess;
+            }
         }
     }
 }

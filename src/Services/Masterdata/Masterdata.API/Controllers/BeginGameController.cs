@@ -23,14 +23,10 @@ namespace Masterdata.API.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateBeginGame(CreateBeginGameCommand command)
+        public async Task<ApiSuccessResponse> CreateBeginGame(CreateBeginGameCommand command)
         {
             var result = await _mediator.Send(command);
-            return Ok(new ApiSuccessResponse
-            {
-                Data = result,
-                Message = "Tạo thành công"
-            });
+            return result;
         }
     }
 }
