@@ -47,6 +47,7 @@ namespace Masterdata.Application.Features.V1.Commands.Question
 
         public async Task<bool> Handle(CreateQuestionCommand request, CancellationToken cancellationToken)
         {
+            List<AnswerModel> lstAnswerModel = new List<AnswerModel>();
             if(!request.ListQuestions.Any()) return true;
 
             foreach (var question in request.ListQuestions)
@@ -76,7 +77,7 @@ namespace Masterdata.Application.Features.V1.Commands.Question
                     questionEntity.ImageUrl = imagePath;
                 }
 
-                _context.QuestionModels.Add(questionEntity);
+                 await _context.QuestionModels.AddAsync(questionEntity);
 
                 // Add đáp án
                 if (!question.ListAnswers.Any()) continue;
@@ -92,8 +93,9 @@ namespace Masterdata.Application.Features.V1.Commands.Question
                         IsCorrect = item.IsCorrect,
                         CreateTime = DateTime.Now,
                     };
-                    _context.AnswerModels.Add(answerEntity);
+                    lstAnswerModel.Add(answerEntity);
                 }
+                await _context.AnswerModels.AddRangeAsync(lstAnswerModel);
             }
 
             await _unitOfWork.SaveChangesAsync();   
