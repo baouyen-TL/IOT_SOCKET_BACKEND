@@ -1,4 +1,5 @@
-﻿using Infrastructure.Data;
+﻿using Core.Exceptions;
+using Infrastructure.Data;
 using Masterdata.Application.Features.V1.DTOs.Report;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -20,11 +21,18 @@ namespace Masterdata.Application.Features.V1.Queries.Report
         Task<List<ReportCountAnswerResponse>> GetReportCountAnswerBy(Guid BeginGameId, Guid QuestionId);
 
         /// <summary>
+        /// Bảng xếp hạng top 3 remote
+        /// </summary>
+        /// <param name="BeginGameId"></param>
+        /// <returns></returns>
+        Task<List<ReportTopRankingRemoteResponse>> GetReportTopRankingBy(Guid BeginGameId);
+
+        /// <summary>
         /// Bảng xếp hạng Remote
         /// </summary>
         /// <param name="BeginGameId"></param>
         /// <returns></returns>
-        Task<List<ReportRankingRemoteResponse>> GetReportRankingBy(Guid BeginGameId);
+        Task<List<ReportRankingDetailResponse>> GetReportRankingDetailBy(Guid BeginGameId);
     }
     public class ReportQuery : IReportQuery
     {
@@ -50,7 +58,7 @@ namespace Masterdata.Application.Features.V1.Queries.Report
                 var res = new ReportCountAnswerResponse
                 {
                     AnswerId = anwser.AnswerId,
-                    AnswerName = anwser.AnswerName,
+                    AnswerKey = anwser.AnswerKey,
                     TotalUserSelected = item.TotalUserSelected,
                 };
                 ListRes.Add(res);
@@ -59,35 +67,47 @@ namespace Masterdata.Application.Features.V1.Queries.Report
             return ListRes;
         }
 
-        public async Task<List<ReportRankingRemoteResponse>> GetReportRankingBy(Guid BeginGameId)
+        public Task<List<ReportRankingDetailResponse>> GetReportRankingDetailBy(Guid BeginGameId)
         {
-            var res = new List<ReportRankingRemoteResponse>();
-            var query = await _context.SaveAnswerModels.Where(x => x.BeginGameId == BeginGameId).ToListAsync();
-
-            var tests = query.GroupBy(x => x.RemoteId).Select(x => new
-            {
-                x = x.Key,
-                y= x.Select(x => x.AnswerId).ToList(),
-            }).ToList();
-
-            foreach (var test in tests)
-            {
-                foreach (var item in test.y)
-                {
-                    var answer = _context.AnswerModels.FirstOrDefaultAsync(x => x.AnswerId == item);
-
-                    if (answer == null) continue;
-
-                    //if(answer.IsCorrect == true)
-                    //{
-                    //    var RankingRes = new ReportRankingRemoteResponse
-                    //    {
-                            
-                    //    };
-                    //}
-                }
-            }
-            return res;
+            throw new NotImplementedException();
         }
+
+        public async Task<List<ReportTopRankingRemoteResponse>> GetReportTopRankingBy(Guid BeginGameId)
+        {
+            var res = new List<ReportTopRankingRemoteResponse>();
+            var begingames = await _context.SaveAnswerModels.Where(x => x.BeginGameId == BeginGameId)
+                .ToListAsync();
+            if (!begingames.Any()) throw new BadRequestException("BeginGameId này không tồn tại!");
+
+            // List đáp án đúng
+            var ListAnswerCorrectRes = new List<ReportTopRankingRemoteTempResponse>();
+
+            foreach (var item in begingames)
+            {
+                var listAnswers = await _context.AnswerModels.FirstOrDefaultAsync(x => x.AnswerId == item.AnswerId && x.IsCorrect == true);
+                if (listAnswers == null) continue;
+
+                var tempRes = new ReportTopRankingRemoteTempResponse
+                {
+                    RemoteId = item.RemoteId,
+                    AnwserId = item.AnswerId,
+                };
+                ListAnswerCorrectRes.Add(tempRes);
+            }
+
+            var bxhs = ListAnswerCorrectRes.GroupBy(x => x.RemoteId).Select(x => new
+            {
+                RemoteId = x.Key,
+                Total = x.Count(),
+            }).OrderByDescending(x => x.Total);
+
+            var query = bxhs.Take(3).Select((x,i) => new ReportTopRankingRemoteResponse
+            {
+                Position = i + 1,
+                UserName = _context.UserGameModels.FirstOrDefault(y => y.RemoteId == x.RemoteId && y.BeginGameId == BeginGameId)?.UserName,
+                RemoteName = _context.RemoteModels.FirstOrDefault(y => y.RemoteId == x.RemoteId)?.RemoteName
+            }).ToList();
+            return query;
+        }  
     }
 }

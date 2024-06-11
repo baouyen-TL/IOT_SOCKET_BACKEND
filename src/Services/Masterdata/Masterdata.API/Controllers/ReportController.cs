@@ -32,7 +32,18 @@ namespace Masterdata.API.Controllers
             return Ok(new ApiSuccessResponse
             {
                 Data = result,
-                Message = "Lấy sanh sách đáp án thành công"
+                Message = "Lấy sanh sách báo cáo thành công"
+            });
+        }
+
+        [HttpGet("report-top-ranking")]
+        public async Task<IActionResult> GetReportTopRanking([FromQuery] Guid BeginGameId)
+        {
+            var result = await _query.GetReportTopRankingBy(BeginGameId);
+            return Ok(new ApiSuccessResponse
+            {
+                Data = result,
+                Message = "Lấy sanh sách báo cáo thành công"
             });
         }
     }
