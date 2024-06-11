@@ -8,8 +8,8 @@ namespace Core.Constant
 {
     public class ConstTopicConnect
     {
-        public const string ConnectWifi = "ConnectWifi";
-        public const string ChooseAnswer = "ChooseAnswer";
-        public const string NextQuestion = "NextQuestion";
+        public const string ConnectWifi = "connectwifi";
+        public const string ChooseAnswer = "chooseanswer";
+        public const string NextQuestion = "nextquestion";
     }
 }

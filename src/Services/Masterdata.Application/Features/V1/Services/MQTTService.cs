@@ -101,10 +101,10 @@ namespace Masterdata.Application.Features.V1.Services
                     var remoteQuery = scope.ServiceProvider.GetRequiredService<IRemoteQuery>();
 
                     var message = Encoding.UTF8.GetString(e.Message);
-                    var mqttResponse = JsonConvert.DeserializeObject<MQTTResponse>(message);
-                    string ClientValue = mqttResponse.objReq.Values.ToString();
+                    var mqttResponse = JsonConvert.DeserializeObject<Dictionary<string,string>>(message);
+                    string ClientValue = mqttResponse.Values.FirstOrDefault();
 
-                    string ClientKey = mqttResponse.objReq.Keys.ToString();
+                    string ClientKey = mqttResponse.Keys.FirstOrDefault();
 
                     switch (e.Topic)
                     {

@@ -37,7 +37,7 @@ namespace Masterdata.Application.Features.V1.Queries.Remote
 
         public async Task<List<RemoteResponse>> GetStatusRemoteByRemoteName()
         {
-            var query = await _context.RemoteModels.Where(x => x.Status == true).Select(x => new RemoteResponse
+            var query = await _context.RemoteModels.Select(x => new RemoteResponse
             {
                 RemoteId = x.RemoteId,
                 RemoteName = x.RemoteName,
