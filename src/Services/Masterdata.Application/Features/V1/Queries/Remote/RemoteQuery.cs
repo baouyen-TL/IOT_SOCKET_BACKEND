@@ -46,9 +46,9 @@ namespace Masterdata.Application.Features.V1.Queries.Remote
             return query;
         }
 
-        public async Task<bool> UpdateStatusRemoteByRemoteName(string remoteName)
+        public async Task<bool> UpdateStatusRemoteByRemoteName(string clientId)
         {
-            var remote = await _context.RemoteModels.FirstOrDefaultAsync(x => x.RemoteName == remoteName);
+            var remote = await _context.RemoteModels.FirstOrDefaultAsync(x => x.RemoteId == Guid.Parse(clientId));
             if(remote != null)
             {
                 remote.Status = true;
