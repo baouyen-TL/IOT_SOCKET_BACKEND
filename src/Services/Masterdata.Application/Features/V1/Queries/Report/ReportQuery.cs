@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -67,25 +68,77 @@ namespace Masterdata.Application.Features.V1.Queries.Report
             return ListRes;
         }
 
-        public Task<List<ReportRankingDetailResponse>> GetReportRankingDetailBy(Guid BeginGameId)
+        public async Task<List<ReportRankingDetailResponse>> GetReportRankingDetailBy(Guid BeginGameId)
         {
-            throw new NotImplementedException();
+            var savegames = await _context.SaveAnswerModels.Where(x => x.BeginGameId == BeginGameId).ToListAsync();
+            if (!savegames.Any()) throw new BadRequestException("BeginGameId này không tồn tại!");
+
+            // List đáp án đúng
+            var listAnswerD = new List<ReportRankingDetailTempResponse>();
+            // List đáp án không đúng
+            var listAnwserKD = new List<ReportRankingDetailTempResponse>();
+
+            foreach(var item in savegames)
+            {
+                var listAnswer = await _context.AnswerModels.FirstOrDefaultAsync(x => x.AnswerId == item.AnswerId && x.IsCorrect == true);
+                if(listAnswer == null)
+                {
+                    var tempRes = new ReportRankingDetailTempResponse
+                    {
+                        RemoteId = item.RemoteId,
+                        AnwserId = item.AnswerId,
+                        TTGC = item.SelectedTime,
+                        IsCorrect = false,
+                    };
+                    listAnwserKD.Add(tempRes);
+                }
+                else
+                {
+                    var tempRes = new ReportRankingDetailTempResponse
+                    {
+                        RemoteId = item.RemoteId,
+                        AnwserId = item.AnswerId,
+                        TTGC = item.SelectedTime,
+                        IsCorrect = true,
+                    };
+                    listAnswerD.Add(tempRes);
+                }
+            }
+
+            string ConvertIntToTimeSpanString(int? TTGC)
+            {
+                if(!TTGC.HasValue) return TimeSpan.Zero.ToString();
+                return TimeSpan.FromSeconds(TTGC.Value).ToString();
+            }
+
+            var listTH = listAnswerD.Concat(listAnwserKD);
+
+            var query = listTH.GroupBy(x => x.RemoteId).Select(x => new ReportRankingDetailResponse
+            {
+                RemoteId = x.Key,
+                UserName = _context.UserGameModels.FirstOrDefault(y => y.RemoteId == x.Key && y.BeginGameId == BeginGameId)?.UserName,
+                SCD = x.Where(x => x.IsCorrect == true).Count(),
+                SCKD = x.Where(x => x.IsCorrect != true).Count(),
+                TTGC = ConvertIntToTimeSpanString(x.Sum(x => x.TTGC))
+            }).OrderByDescending(x =>x.SCD).ThenByDescending(x => x.TTGC).ToList();
+
+            return query;
         }
 
         public async Task<List<ReportTopRankingRemoteResponse>> GetReportTopRankingBy(Guid BeginGameId)
         {
             var res = new List<ReportTopRankingRemoteResponse>();
-            var begingames = await _context.SaveAnswerModels.Where(x => x.BeginGameId == BeginGameId)
+            var savegames = await _context.SaveAnswerModels.Where(x => x.BeginGameId == BeginGameId)
                 .ToListAsync();
-            if (!begingames.Any()) throw new BadRequestException("BeginGameId này không tồn tại!");
+            if (!savegames.Any()) throw new BadRequestException("BeginGameId này không tồn tại!");
 
             // List đáp án đúng
             var ListAnswerCorrectRes = new List<ReportTopRankingRemoteTempResponse>();
 
-            foreach (var item in begingames)
+            foreach (var item in savegames)
             {
-                var listAnswers = await _context.AnswerModels.FirstOrDefaultAsync(x => x.AnswerId == item.AnswerId && x.IsCorrect == true);
-                if (listAnswers == null) continue;
+                var listAnswer = await _context.AnswerModels.FirstOrDefaultAsync(x => x.AnswerId == item.AnswerId && x.IsCorrect == true);
+                if (listAnswer == null) continue;
 
                 var tempRes = new ReportTopRankingRemoteTempResponse
                 {

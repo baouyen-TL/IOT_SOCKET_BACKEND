@@ -36,10 +36,26 @@ namespace Masterdata.API.Controllers
             });
         }
 
+        /// <summary>
+        /// Bảng xếp hạng top 3 
+        /// </summary>
+        /// <param name="BeginGameId"></param>
+        /// <returns></returns>
         [HttpGet("report-top-ranking")]
         public async Task<IActionResult> GetReportTopRanking([FromQuery] Guid BeginGameId)
         {
             var result = await _query.GetReportTopRankingBy(BeginGameId);
+            return Ok(new ApiSuccessResponse
+            {
+                Data = result,
+                Message = "Lấy sanh sách báo cáo thành công"
+            });
+        }
+
+        [HttpGet("report-list-ranking-detail")]
+        public async Task<IActionResult> GetReportListRankingDetail([FromQuery] Guid BeginGameId)
+        {
+            var result = await _query.GetReportRankingDetailBy(BeginGameId);
             return Ok(new ApiSuccessResponse
             {
                 Data = result,

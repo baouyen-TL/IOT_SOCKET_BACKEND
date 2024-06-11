@@ -27,10 +27,19 @@ namespace Masterdata.Application.Features.V1.DTOs.Report
 
     public class ReportRankingDetailResponse
     {
+        public Guid? RemoteId { get; set; }
         public string UserName { get; set; }
         public int? SCD { get; set; }
-        public int? SCS { get; set; }
+        public int? SCKD { get; set; }
+        public string TTGC { get; set; }
+    }
+
+    public class ReportRankingDetailTempResponse
+    {
+        public Guid? RemoteId { get; set; }
+        public Guid? AnwserId { get; set; }
         public int? TTGC { get; set; }
+        public bool? IsCorrect { get; set; }
     }
 
 }
