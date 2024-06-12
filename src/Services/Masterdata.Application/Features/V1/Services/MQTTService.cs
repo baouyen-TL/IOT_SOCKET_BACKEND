@@ -53,11 +53,9 @@ namespace Masterdata.Application.Features.V1.Services
                 _mqttClient.Subscribe(new string[]
                     { 
                         ConstTopicConnect.ConnectWifi,
-                        ConstTopicConnect.ChooseAnswer,
-                        ConstTopicConnect.NextQuestion
+                        ConstTopicConnect.ChooseAnswer
                     }, 
                     new byte[] {
-                        MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE,
                         MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE,
                         MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE
                     });
@@ -70,6 +68,37 @@ namespace Masterdata.Application.Features.V1.Services
             }
 
             return Task.CompletedTask;
+        }
+
+        public bool PublishMessageAsync(string topic, object message)
+        {
+            if (_mqttClient == null || !_mqttClient.IsConnected)
+            {
+                var _configManager = new ConfigManager();
+                var brokerAddress = _configManager.BrokerAddress;
+                var port = _configManager.Port;
+                var username = _configManager.UserName;
+                var password = _configManager.Password;
+                try
+                {
+                    _mqttClient = new MqttClient(brokerAddress, port, true, MqttSslProtocols.TLSv1_2, null, null);
+                    string clientId = Guid.NewGuid().ToString();
+                    _mqttClient.Connect(clientId, username, password);
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error connecting to MQTT broker: {ex.Message}");
+                    // Xử lý lỗi kết nối
+                    return false; // hoặc ném một ngoại lệ hoặc thực hiện các hành động khác cần thiết
+                }
+
+            }
+            string jsonMessage = JsonConvert.SerializeObject(message);
+
+            var messageBytes = Encoding.UTF8.GetBytes(jsonMessage);
+            _mqttClient.Publish(topic, messageBytes, MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, false);
+            return true;
         }
 
         private async void MqttClient_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
@@ -110,10 +139,11 @@ namespace Masterdata.Application.Features.V1.Services
                     {
                         case ConstTopicConnect.ConnectWifi:
                             await remoteQuery.UpdateStatusRemoteByRemoteName(ClientValue);
+                            await _hubContext.Clients.All.SendAsync("ConnectWifi", ClientKey ?? "", ClientValue);
                             break;
 
                         case ConstTopicConnect.ChooseAnswer:
-                            await _hubContext.Clients.All.SendAsync("ReceiveMessage", ClientKey ?? "", ClientValue);
+                            await _hubContext.Clients.All.SendAsync("ChooseAnswer", ClientKey ?? "", ClientValue, DateTime.Now);
                             break;
 
                         case ConstTopicConnect.NextQuestion:

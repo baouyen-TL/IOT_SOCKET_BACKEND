@@ -30,5 +30,26 @@ namespace Masterdata.API.Controllers
                 Message = "Tạo thành công"
             });
         }
+
+        [HttpGet("list-connect-remote")]
+        public async Task<IActionResult> GetLstConnectedRemote()
+        {
+            var result = await _query.GetListConnectedRemote();
+            return Ok(new ApiSuccessResponse
+            {
+                Data = result,
+                Message = "Tạo thành công"
+            });
+        }
+        [HttpPost("disconnect-remote")]
+        public async Task<IActionResult> DisconnectRemote()
+        {
+            var result = await _query.DisconnectRemote();
+            return Ok(new ApiSuccessResponse
+            {
+                Data = result,
+                Message = result == true?"Ngắt kết nối thiết bị thành công":"Ngắt kết nối thiết bị thất bại!!!"
+            });
+        }
     }
 }
