@@ -51,5 +51,16 @@ namespace Masterdata.API.Controllers
                 Message = result == true?"Ngắt kết nối thiết bị thành công":"Ngắt kết nối thiết bị thất bại!!!"
             });
         }
+
+        [HttpPost("initial-remote")]
+        public IActionResult InitialRemote()
+        {
+            var result = _query.InitialRemote();
+            return Ok(new ApiSuccessResponse
+            {
+                Data = result,
+                Message = result == true ? "Khởi tạo thiết bị thành công" : "Khởi tạo thiết bị thất bại!!!"
+            });
+        }
     }
 }

@@ -32,6 +32,7 @@ namespace Masterdata.Application.Features.V1.Queries.Remote
 
         Task<List<RemoteResponse>> GetListConnectedRemote();
         Task<bool> DisconnectRemote();
+        bool InitialRemote();
     }
     public class RemoteQuery : IRemoteQuery 
     {
@@ -49,22 +50,33 @@ namespace Masterdata.Application.Features.V1.Queries.Remote
 
         public async Task<bool> DisconnectRemote()
         {
-            object sendmessage = new
-            {
-                next = "true"
-            };
-            MQTTService mqttService = new MQTTService(_hubContext, _serviceScopeFactory);
-            bool status = mqttService.PublishMessageAsync(ConstTopicConnect.NextQuestion, sendmessage);
-            if(status)
+            try
             {
                 var listRemote = await _context.RemoteModels.ToListAsync();
-                foreach(var item in listRemote)
+                foreach (var item in listRemote)
                 {
                     item.Status = false;
                 }
                 _context.RemoteModels.UpdateRange(listRemote);
                 await _UnitOfWork.SaveChangesAsync();
-            }    
+                return true;
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
+            
+            
+        }
+
+        public bool InitialRemote()
+        {
+            object sendmessage = new
+            {
+                next = "true"
+            };
+            MQTTService mqttService = new MQTTService(_hubContext, _serviceScopeFactory);
+            bool status =  mqttService.PublishMessageAsync(ConstTopicConnect.NextQuestion, sendmessage);
             return status;
         }
 
