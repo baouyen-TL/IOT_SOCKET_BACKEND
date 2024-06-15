@@ -75,7 +75,7 @@ namespace Masterdata.Application.Features.V1.Queries.Remote
                 RemoteId = x.RemoteId,
                 RemoteName = x.RemoteName,
                 Status = x.Status,
-            }).ToListAsync();
+            }).OrderBy(x=>x.RemoteName).ToListAsync();
             return query;
         }
 
@@ -86,7 +86,7 @@ namespace Masterdata.Application.Features.V1.Queries.Remote
                 RemoteId = x.RemoteId,
                 RemoteName = x.RemoteName,
                 Status = x.Status,
-            }).ToListAsync();
+            }).OrderBy(x=>x.RemoteName).ToListAsync();
             return query;
         }
 

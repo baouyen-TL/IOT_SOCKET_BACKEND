@@ -35,23 +35,27 @@ namespace Masterdata.Application.Features.V1.Commands.SaveAnswer
 
         public async Task<bool> Handle(CreateSaveAnswerCommand request, CancellationToken cancellationToken)
         {
-            // Add câu trả lời
-            var saveAnswerEntity = new SaveAnswerModel
+            if(request.CountTime>0)
             {
-                SaveAnswerId = Guid.NewGuid(),
-                BeginGameId = request.BeginGameId,
-                QuestionId = request.QuestionId,
-                AnswerId = request.AnswerId,
-                RemoteId = request.RemoteId,
-                SelectedTime = request.QuestionTime - request.CountTime,
-                CreateTime = DateTime.Now
-            };
+                // Add câu trả lời
+                var saveAnswerEntity = new SaveAnswerModel
+                {
+                    SaveAnswerId = Guid.NewGuid(),
+                    BeginGameId = request.BeginGameId,
+                    QuestionId = request.QuestionId,
+                    AnswerId = request.AnswerId,
+                    RemoteId = request.RemoteId,
+                    SelectedTime = request.QuestionTime - request.CountTime,
+                    CreateTime = DateTime.Now
+                };
 
-            _context.SaveAnswerModels.Add(saveAnswerEntity);
+                _context.SaveAnswerModels.Add(saveAnswerEntity);
 
-            await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
-            return true;
+                return true;
+            }
+            return false;
         }
     }
 }
