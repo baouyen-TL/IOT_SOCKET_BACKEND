@@ -22,11 +22,32 @@ namespace Masterdata.API.Controllers
             _query = query;
         }
 
+        /// <summary>
+        /// Bắt đầu trò chơi
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         [HttpPost("create")]
         public async Task<ApiSuccessResponse> CreateBeginGame(CreateBeginGameCommand command)
         {
             var result = await _mediator.Send(command);
             return result;
+        }
+
+        /// <summary>
+        /// Xóa bắt đầu trò chơi theo chủ đề
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteBeginGameByTopicId([FromQuery] DeleteBeginGameCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(new ApiSuccessResponse
+            {
+                Data = result,
+                Message = "Tạo câu hỏi thành công"
+            });
         }
     }
 }

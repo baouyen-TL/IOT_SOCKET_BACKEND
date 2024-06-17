@@ -18,6 +18,7 @@ namespace Infrastructure.Data
         public string ClassName { get; set; }
         public DateTime? CreateTime { get; set; }
         public DateTime? LastEditTime { get; set; }
+        public bool? Actived { get; set; }
 
         public virtual TopicModel Topic { get; set; }
         public virtual ICollection<SaveAnswerModel> SaveAnswerModels { get; set; }
