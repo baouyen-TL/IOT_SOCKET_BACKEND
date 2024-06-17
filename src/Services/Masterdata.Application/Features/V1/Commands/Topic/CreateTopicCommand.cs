@@ -34,6 +34,7 @@ namespace Masterdata.Application.Features.V1.Commands.Topic
                 TopicId = Guid.NewGuid(),
                 TopicName = request.TopicName,
                 CreateTime = DateTime.Now,
+                Actived = true
             };
 
             _context.TopicModels.Add(topicEntity);

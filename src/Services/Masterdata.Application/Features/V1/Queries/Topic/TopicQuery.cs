@@ -26,7 +26,7 @@ namespace Masterdata.Application.Features.V1.Queries.Topic
         }
         public async Task<PagingResultSP<TopicResponse>> GetListTopics(SearchTopicCommand request)
         {
-            var query = _context.TopicModels
+            var query = _context.TopicModels.Where(x => x.Actived == true)
                 .Select(x => new TopicResponse
                 {
                     TopicId = x.TopicId,

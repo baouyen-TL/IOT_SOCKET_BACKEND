@@ -29,22 +29,23 @@ namespace Masterdata.Application.Features.V1.Commands.BeginGame
             var topic = await _context.TopicModels.FirstOrDefaultAsync(x => x.TopicId == request.TopicId);
             if (topic == null) throw new BadRequestException("TopicId không tồn tại!");
 
-            var beginGames = await _context.BeginGameModels.Where(x => x.TopicId == topic.TopicId).ToListAsync();
-            if (beginGames.Any())
-            {
-                // Xóa bắt đầu trò chơi theo chủ đề
-                _context.BeginGameModels.RemoveRange(beginGames);
-            }
+            topic.Actived = false;
+            //var beginGames = await _context.BeginGameModels.Where(x => x.TopicId == topic.TopicId).ToListAsync();
+            //if (beginGames.Any())
+            //{
+            //    // Xóa bắt đầu trò chơi theo chủ đề
+            //    _context.BeginGameModels.RemoveRange(beginGames);
+            //}
 
-            var questions = await _context.QuestionModels.Where(x => x.TopicId == topic.TopicId).ToListAsync();
-            if (questions.Any())
-            {
-                // Xóa câu hỏi theo chủ đề
-                _context.QuestionModels.RemoveRange(questions);
-            }
+            //var questions = await _context.QuestionModels.Where(x => x.TopicId == topic.TopicId).ToListAsync();
+            //if (questions.Any())
+            //{
+            //    // Xóa câu hỏi theo chủ đề
+            //    _context.QuestionModels.RemoveRange(questions);
+            //}
 
-            // Xóa chủ đề
-            _context.TopicModels.Remove(topic);
+            //// Xóa chủ đề
+            //_context.TopicModels.Remove(topic);
 
             await _unitOfWork.SaveChangesAsync();
 
