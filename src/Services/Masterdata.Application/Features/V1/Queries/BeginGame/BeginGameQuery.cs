@@ -31,7 +31,7 @@ namespace Masterdata.Application.Features.V1.Queries.BeginGame
         }
         public async Task<PagingResultSP<BeginGameResponse>> GetListBeginGameAsync(SearchBeginGameCommand request)
         {
-            var query = _context.BeginGameModels
+            var query = _context.BeginGameModels.Where(x => x.Actived == true)
                 .Include(x => x.Topic)
                 .Select(x => new BeginGameResponse
                 {

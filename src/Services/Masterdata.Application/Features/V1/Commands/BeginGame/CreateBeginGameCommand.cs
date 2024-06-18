@@ -48,6 +48,7 @@ namespace Masterdata.Application.Features.V1.Commands.BeginGame
                     TopicId = request.TopicId,
                     ClassName = request.ClassName,
                     CreateTime = DateTime.Now,
+                    Actived = true,
                 };
 
                 _context.BeginGameModels.Add(beginGameEntity);
