@@ -4,6 +4,7 @@ using Core.Responses;
 using FluentValidation.AspNetCore;
 using Infrastructure.Data;
 using Masterdata.Application.Features.V1.Commands.Topic;
+using Masterdata.Application.Features.V1.Queries.BeginGame;
 using Masterdata.Application.Features.V1.Queries.Question;
 using Masterdata.Application.Features.V1.Queries.Remote;
 using Masterdata.Application.Features.V1.Queries.Report;
@@ -76,6 +77,7 @@ namespace Masterdata.API
             services.AddScoped<IRemoteQuery, RemoteQuery>();
             services.AddScoped<ITopicQuery, TopicQuery>();
             services.AddScoped<IReportQuery, ReportQuery>();
+            services.AddScoped<IBeginGameQuery, BeginGameQuery>();
             services.AddScoped<ICommonService, CommonService>();
 
 

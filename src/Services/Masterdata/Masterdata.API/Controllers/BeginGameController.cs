@@ -1,6 +1,7 @@
 ﻿using Core.Responses;
 using Masterdata.Application.Features.V1.Commands.BeginGame;
 using Masterdata.Application.Features.V1.Commands.Question;
+using Masterdata.Application.Features.V1.Queries.BeginGame;
 using Masterdata.Application.Features.V1.Queries.Question;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -14,9 +15,9 @@ namespace Masterdata.API.Controllers
     public class BeginGameController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IQuestionQuery _query;
+        private readonly IBeginGameQuery _query;
 
-        public BeginGameController(IMediator mediator, IQuestionQuery query)
+        public BeginGameController(IMediator mediator, IBeginGameQuery query)
         {
             _mediator = mediator;
             _query = query;
@@ -47,6 +48,27 @@ namespace Masterdata.API.Controllers
             {
                 Data = result,
                 Message = "Tạo câu hỏi thành công"
+            });
+        }
+
+        /// <summary>
+        /// Lấy sanh sách chủ đề đã chơi
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("search")]
+        public async Task<IActionResult> GetListBeginGame(SearchBeginGameCommand request)
+        {
+            var result = await _query.GetListBeginGameAsync(request);
+            return Ok(new ApiPagingSuccessResponse
+            {
+                Data = result.Data,
+                Paging = new PagingResponse
+                {
+                    TotalCount = result.Paging.TotalCount,
+                    TotalPage = result.Paging.TotalPages,
+                    PageSize = result.Paging.PageSize
+                }
             });
         }
     }
