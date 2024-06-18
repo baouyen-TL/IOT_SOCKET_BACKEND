@@ -87,7 +87,7 @@ namespace Masterdata.Application.Features.V1.Queries.Report
                     {
                         RemoteId = item.RemoteId,
                         AnwserId = item.AnswerId,
-                        TTGC = item.SelectedTime,
+                        TTGC = 0,
                         IsCorrect = false,
                     };
                     listAnwserKD.Add(tempRes);
@@ -112,13 +112,21 @@ namespace Masterdata.Application.Features.V1.Queries.Report
             }
 
             var listTH = listAnswerD.Concat(listAnwserKD);
+            int noChosseQuestion = 0;
+            var BeginModels = await _context.BeginGameModels.Where(x => x.BeginGameId == BeginGameId).FirstOrDefaultAsync();
+            if(BeginModels !=null)
+            {
+                var lstquestionByTopicId = await _context.QuestionModels.Where(x => x.TopicId == BeginModels.TopicId).ToListAsync();
+                noChosseQuestion = lstquestionByTopicId.Count - listTH.Count();
+            }    
 
             var query = listTH.GroupBy(x => x.RemoteId).Select(x => new ReportRankingDetailResponse
             {
                 RemoteId = x.Key,
                 UserName = _context.UserGameModels.FirstOrDefault(y => y.RemoteId == x.Key && y.BeginGameId == BeginGameId)?.UserName,
                 SCD = x.Where(x => x.IsCorrect == true).Count(),
-                SCKD = x.Where(x => x.IsCorrect != true).Count(),
+                SCKD = x.Where(x => x.IsCorrect == false).Count(),
+                SCKC = noChosseQuestion,
                 TTGC = ConvertIntToTimeSpanString(x.Sum(x => x.TTGC))
             }).OrderByDescending(x =>x.SCD).ThenByDescending(x => x.TTGC).ToList();
 
@@ -144,15 +152,17 @@ namespace Masterdata.Application.Features.V1.Queries.Report
                 {
                     RemoteId = item.RemoteId,
                     AnwserId = item.AnswerId,
+                    timeSelection = item.SelectedTime
                 };
                 ListAnswerCorrectRes.Add(tempRes);
             }
 
-            var bxhs = ListAnswerCorrectRes.GroupBy(x => x.RemoteId).Select(x => new
+            var bxhs = ListAnswerCorrectRes.GroupBy(x => x.RemoteId).Select(y => new
             {
-                RemoteId = x.Key,
-                Total = x.Count(),
-            }).OrderByDescending(x => x.Total);
+                RemoteId = y.Key,
+                Total = y.Count(),
+                timeSelection = y.Sum(x =>x.timeSelection)
+            }).OrderByDescending(x => x.Total).OrderBy(x=>x.timeSelection);
 
             var query = bxhs.Take(3).Select((x,i) => new ReportTopRankingRemoteResponse
             {
