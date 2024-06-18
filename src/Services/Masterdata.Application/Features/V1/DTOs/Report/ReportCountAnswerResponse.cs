@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +17,7 @@ namespace Masterdata.Application.Features.V1.DTOs.Report
     public class ReportTopRankingRemoteTempResponse {
         public Guid? RemoteId { get; set; }
         public Guid? AnwserId { get; set; }
+        public int? timeSelection { get; set; }
     }
 
     public class ReportTopRankingRemoteResponse
@@ -31,6 +33,7 @@ namespace Masterdata.Application.Features.V1.DTOs.Report
         public string UserName { get; set; }
         public int? SCD { get; set; }
         public int? SCKD { get; set; }
+        public int? SCKC { get; set; }
         public string TTGC { get; set; }
     }
 
