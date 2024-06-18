@@ -32,7 +32,7 @@ namespace Core.SeedWork
                 var checkExistOrderBy = string.IsNullOrEmpty(searchRequest.OrderBy) ? new List<string>() :
                                         listFied.Where(x => x.ToLower().Trim().Contains(searchRequest.OrderBy.ToLower().Trim())).ToList();
 
-                if (!checkExistOrderBy.Any() && !checkExistOrderBy.Any())
+                if (!checkExistOrderByDesc.Any() && !checkExistOrderBy.Any())
                     return query;
             }
 
