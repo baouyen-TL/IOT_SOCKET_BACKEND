@@ -37,6 +37,7 @@ namespace Masterdata.Application.Features.V1.Queries.BeginGame
                 {
                     BeginGameId = x.BeginGameId,
                     TopicName = x.Topic.TopicName,
+                    ClassName = x.ClassName,
                     CreateTime = x.CreateTime
                 });
 

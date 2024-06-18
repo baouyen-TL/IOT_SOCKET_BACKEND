@@ -11,6 +11,7 @@ namespace Masterdata.Application.Features.V1.DTOs.BeginGame
         public int? STT { get; set; }
         public Guid? BeginGameId { get; set; }
         public string TopicName { get; set; }
+        public string ClassName { get; set; }
         public DateTime? CreateTime { get; set; }
     }
 }
