@@ -36,18 +36,18 @@ namespace Masterdata.API.Controllers
         }
 
         /// <summary>
-        /// Xóa bắt đầu trò chơi theo chủ đề
+        /// Xóa từng trò chơi đã chơi
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
         [HttpDelete("delete")]
-        public async Task<IActionResult> DeleteBeginGameByTopicId([FromQuery] DeleteBeginGameCommand command)
+        public async Task<IActionResult> DeleteBeginGameById([FromQuery] DeleteBeginGameCommand command)
         {
             var result = await _mediator.Send(command);
             return Ok(new ApiSuccessResponse
             {
                 Data = result,
-                Message = "Tạo câu hỏi thành công"
+                Message = "Xóa thành công"
             });
         }
 

@@ -1,4 +1,5 @@
 ﻿using Core.Responses;
+using Masterdata.Application.Features.V1.Commands.BeginGame;
 using Masterdata.Application.Features.V1.Commands.Topic;
 using Masterdata.Application.Features.V1.Queries.Topic;
 using MediatR;
@@ -56,7 +57,21 @@ namespace Masterdata.API.Controllers
             });
         }
 
-
+        /// <summary>
+        /// Xóa bắt đầu trò chơi theo chủ đề
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteBeginGameByTopicId([FromQuery] DeleteTopicCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(new ApiSuccessResponse
+            {
+                Data = result,
+                Message = "Xóa thành công"
+            });
+        }
 
     }
 }
