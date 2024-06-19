@@ -11,6 +11,7 @@ namespace Core.SeedWork
     {
         public static IQueryable<T> Sorting<T>(PagingQuery searchRequest, IQueryable<T> query)
         {
+            
             if (string.IsNullOrEmpty(searchRequest.OrderByDesc) && string.IsNullOrEmpty(searchRequest.OrderBy))
             {
                 return query;

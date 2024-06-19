@@ -31,23 +31,35 @@ namespace Masterdata.Application.Features.V1.Queries.BeginGame
         }
         public async Task<PagingResultSP<BeginGameResponse>> GetListBeginGameAsync(SearchBeginGameCommand request)
         {
-            var query = _context.BeginGameModels.Where(x => x.Actived == true)
-                .Include(x => x.Topic)
-                .Select(x => new BeginGameResponse
-                {
-                    BeginGameId = x.BeginGameId,
-                    TopicName = x.Topic.TopicName,
-                    ClassName = x.ClassName,
-                    CreateTime = x.CreateTime
-                });
+            var ListBeginGames = new List<BeginGameResponse>();
+            var listSaveAnswers = await _context.SaveAnswerModels.Select(x => x.BeginGameId).Distinct().ToListAsync();
+            foreach (var item in listSaveAnswers)
+            {
+                var test = _context.BeginGameModels.Where(x => x.BeginGameId == item && x.Actived == true)
+                     .Select(x => new BeginGameResponse
+                     {
+                         BeginGameId = x.BeginGameId,
+                         TopicName = x.Topic.TopicName,
+                         ClassName = x.ClassName,
+                         CreateTime = x.CreateTime
+                     }).FirstOrDefault();
 
-            var totalRecords = await query.CountAsync();
+                ListBeginGames.Add(test);
+            }
+
+            var totalRecords = ListBeginGames.Count();
+
+            var query = ListBeginGames.AsQueryable();
 
             //Sorting
             query = PagingSorting.Sorting(request.Paging, query);
 
             //Phân trang
-            var responsePaginated = await PaginatedList<BeginGameResponse>.CreateAsync(query, request.Paging.Offset, request.Paging.PageSize);
+            //var responsePaginated = await PaginatedList<BeginGameResponse>.CreateAsync(query, request.Paging.Offset, request.Paging.PageSize);
+            var responsePaginated = query
+                .Skip(request.Paging.Offset)
+                .Take(request.Paging.PageSize)
+                .ToList();
             var response = new PagingResultSP<BeginGameResponse>(responsePaginated, totalRecords, request.Paging.PageIndex, request.Paging.PageSize);
 
             if (response.Data.Any())
