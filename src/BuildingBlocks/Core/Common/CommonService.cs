@@ -57,7 +57,8 @@ namespace Core.Common
 
                     //Đường dẫn lưu hình
                     var folderPath = String.Format("Upload/{0}/{1}", folder, thisMonth);
-                    var existPath = Path.Combine(new ConfigManager().DocumentDomainUpload + folderPath);
+                    //var existPath = Path.Combine(new ConfigManager().DocumentDomainUpload + folderPath);
+                    var existPath = Path.Combine(new ConfigManager().DocumentDomainUpload);
                     var filePath = String.Format("{0}/{1}", existPath, filename);
                     Directory.CreateDirectory(existPath);
 
@@ -66,7 +67,8 @@ namespace Core.Common
                     var path = Path.Combine(existPath, filename);
 
                     //gán giá trị trả về
-                    response = folderPath + "/" + filename;
+                    //response = folderPath + "/" + filename;
+                    response = filename;
 
                     //Nếu không phải ảnh động hay ảnh trong suốt thì tiến hành resize
                     if (type.ToLower() != "gif" && type.ToLower() != "png" && type.ToLower() != "svg" && type.ToLower() != "mp4")
