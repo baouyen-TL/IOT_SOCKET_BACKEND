@@ -38,13 +38,13 @@ namespace Core.Common
                     int indexDot = file.FileName.LastIndexOf('.');
                     string filename = file.FileName.Substring(0, indexDot);
 
-                    string type = filename.Substring(filename.Length - 4);
+                    string type = file.FileName.Substring(indexDot+1);
                     //Nếu là jpeg thì đổi thành jpg 
-                    if (type.ToLower() == "jpeg")
-                    {
-                        filename = filename.Substring(0, filename.Length - 5) + ".jpg";
-                    }
-                    type = filename.Substring(filename.Length - 3);
+                    //if (type.ToLower() == "jpeg")
+                    //{
+                    //    filename = filename.Substring(0, filename.Length - 5) + ".jpg";
+                    //}
+                    //type = filename.Substring(filename.Length - 3);
 
                     //Convert file name
                     filename = ConvertToNoMarkString(filename);
@@ -69,7 +69,7 @@ namespace Core.Common
                     response = folderPath + "/" + filename;
 
                     //Nếu không phải ảnh động hay ảnh trong suốt thì tiến hành resize
-                    if (type.ToLower() != "gif" && type.ToLower() != "png" && type.ToLower() != "svg")
+                    if (type.ToLower() != "gif" && type.ToLower() != "png" && type.ToLower() != "svg" && type.ToLower() != "mp4")
                     {
                         var img = System.Drawing.Image.FromStream(file.OpenReadStream(), true, true);
                         int w = img.Width;
@@ -84,6 +84,13 @@ namespace Core.Common
                             ResizeStream(w, h, file.OpenReadStream(), path);
                         }
                     }
+                    else if(type.ToLower() == "mp4")
+                    {
+                        using (var stream = new FileStream(path, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+                    }    
                     else
                     {
                         //Save File

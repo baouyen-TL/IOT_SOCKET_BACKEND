@@ -51,6 +51,7 @@ namespace Masterdata.Application.Features.V1.Queries.Question
                     QuestionName = question.QuestionName,
                     QuestionTime = question.QuestionTime,
                     ImageUrl = !string.IsNullOrEmpty(question.ImageUrl) ? $"{config.DocumentDomainUploadRes}{question.ImageUrl}" : null,
+                    VideoUrl = !string.IsNullOrEmpty(question.VideoUrl) ? $"{config.DocumentDomainUploadRes}{question.VideoUrl}" : null,
                 };
 
                 // Response List Answer
@@ -93,6 +94,7 @@ namespace Masterdata.Application.Features.V1.Queries.Question
                 QuestionName = question.QuestionName,
                 QuestionTime = question.QuestionTime,
                 ImageUrl = !string.IsNullOrEmpty(question.ImageUrl) ? $"{config.DocumentDomainUploadRes}{question.ImageUrl}" : null,
+                VideoUrl = !string.IsNullOrEmpty(question.VideoUrl) ? $"{config.DocumentDomainUploadRes}{question.VideoUrl}" : null,
             };
 
             var listAnswer = await _context.AnswerModels.Where(x => x.QuestionId == question.QuestionId)

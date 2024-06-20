@@ -96,6 +96,8 @@ namespace Infrastructure.Data
 
                 entity.Property(e => e.QuestionName).HasMaxLength(2000);
 
+                entity.Property(e => e.VideoUrl).HasMaxLength(500);
+
                 entity.HasOne(d => d.Topic)
                     .WithMany(p => p.QuestionModels)
                     .HasForeignKey(d => d.TopicId)

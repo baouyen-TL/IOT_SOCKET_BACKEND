@@ -20,6 +20,7 @@ namespace Infrastructure.Data
         public string ImageUrl { get; set; }
         public DateTime? CreateTime { get; set; }
         public DateTime? LastEditTime { get; set; }
+        public string VideoUrl { get; set; }
 
         public virtual TopicModel Topic { get; set; }
         public virtual ICollection<AnswerModel> AnswerModels { get; set; }

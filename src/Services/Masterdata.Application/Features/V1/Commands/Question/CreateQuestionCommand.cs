@@ -23,6 +23,7 @@ namespace Masterdata.Application.Features.V1.Commands.Question
         public string QuestionName { get; set; }
         public int? QuestionTime { get; set; }
         public string ImageUrl { get; set; }
+        public string VideoUrl { get; set; }
         public List<CreateAnswerCommand> ListAnswers { get; set; } = new();
 
     }
@@ -75,6 +76,17 @@ namespace Masterdata.Application.Features.V1.Commands.Question
                     var imagePath = await _service.UploadFile(file, "Upload");
 
                     questionEntity.ImageUrl = imagePath;
+                }
+                if (!string.IsNullOrEmpty(question.VideoUrl)) {
+                    //Convert Base64 to Iformfile
+                    byte[] bytes = Convert.FromBase64String(question.VideoUrl);
+                    MemoryStream stream = new MemoryStream(bytes);
+
+                    IFormFile file = new FormFile(stream, 0, bytes.Length, $"Upload_{questionEntity.QuestionId}", $"Upload_{questionEntity.QuestionId}.mp4");
+                    //Save image to server
+                    var imagePath = await _service.UploadFile(file, "Upload");
+
+                    questionEntity.VideoUrl = imagePath;
                 }
 
                  await _context.QuestionModels.AddAsync(questionEntity);
