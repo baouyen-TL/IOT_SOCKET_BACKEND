@@ -26,7 +26,7 @@ namespace Masterdata.Application.Features.V1.Commands.BeginGame
         }
         public async Task<bool> Handle(DeleteBeginGameCommand request, CancellationToken cancellationToken)
         {
-            var beginGame = await _context.BeginGameModels.FirstOrDefaultAsync(x => x.TopicId == request.BeginGameId);
+            var beginGame = await _context.BeginGameModels.FirstOrDefaultAsync(x => x.BeginGameId == request.BeginGameId);
             if (beginGame == null) throw new BadRequestException("BeginGameId không tồn tại!");
 
             beginGame.Actived = false;

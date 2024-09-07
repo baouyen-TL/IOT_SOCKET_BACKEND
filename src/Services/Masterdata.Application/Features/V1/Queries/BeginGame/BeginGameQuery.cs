@@ -43,8 +43,8 @@ namespace Masterdata.Application.Features.V1.Queries.BeginGame
                          ClassName = x.ClassName,
                          CreateTime = x.CreateTime
                      }).FirstOrDefault();
-
-                ListBeginGames.Add(test);
+               if(test!=null)
+                    ListBeginGames.Add(test);
             }
 
             var totalRecords = ListBeginGames.Count();
