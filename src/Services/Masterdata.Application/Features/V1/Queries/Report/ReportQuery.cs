@@ -72,6 +72,7 @@ namespace Masterdata.Application.Features.V1.Queries.Report
         {
             var savegames = await _context.SaveAnswerModels.Where(x => x.BeginGameId == BeginGameId).ToListAsync();
             if (!savegames.Any()) throw new BadRequestException("BeginGameId này không tồn tại!");
+            var userGameModelList = await _context.UserGameModels.Where(x => x.BeginGameId == BeginGameId).ToListAsync();
 
             // List đáp án đúng
             var listAnswerD = new List<ReportRankingDetailTempResponse>();
@@ -119,7 +120,7 @@ namespace Masterdata.Application.Features.V1.Queries.Report
             if(BeginModels !=null)
             {
                 var lstquestionByTopicId = await _context.QuestionModels.Where(x => x.TopicId == BeginModels.TopicId).ToListAsync();
-                noChosseQuestion = savegames.Count - listTH.Count();
+                noChosseQuestion = userGameModelList.Count* lstquestionByTopicId.Count - savegames.Count;
             }    
 
             var query = listTH.GroupBy(x => x.RemoteId).Select(x => new ReportRankingDetailResponse
