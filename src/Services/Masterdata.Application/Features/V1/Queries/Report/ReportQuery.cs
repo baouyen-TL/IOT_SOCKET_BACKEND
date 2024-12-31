@@ -87,7 +87,7 @@ namespace Masterdata.Application.Features.V1.Queries.Report
                     {
                         RemoteId = item.RemoteId,
                         AnwserId = item.AnswerId,
-                        TTGC = 0,
+                        TTGC = item.SelectedTime,
                         IsCorrect = false,
                     };
                     listAnwserKD.Add(tempRes);
@@ -107,8 +107,10 @@ namespace Masterdata.Application.Features.V1.Queries.Report
 
             string ConvertIntToTimeSpanString(int? TTGC)
             {
-                if(!TTGC.HasValue) return TimeSpan.Zero.ToString();
-                return TimeSpan.FromSeconds(TTGC.Value).ToString();
+                if(!TTGC.HasValue) 
+                    return TimeSpan.Zero.ToString();
+                return 
+                    TimeSpan.FromSeconds(TTGC.Value).ToString();
             }
 
             var listTH = listAnswerD.Concat(listAnwserKD);
@@ -117,7 +119,7 @@ namespace Masterdata.Application.Features.V1.Queries.Report
             if(BeginModels !=null)
             {
                 var lstquestionByTopicId = await _context.QuestionModels.Where(x => x.TopicId == BeginModels.TopicId).ToListAsync();
-                noChosseQuestion = lstquestionByTopicId.Count - listTH.Count();
+                noChosseQuestion = savegames.Count - listTH.Count();
             }    
 
             var query = listTH.GroupBy(x => x.RemoteId).Select(x => new ReportRankingDetailResponse
